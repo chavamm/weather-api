@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using WebApplication1.Models;
+using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
@@ -7,29 +10,42 @@ namespace WebApplication1.Controllers
     [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly ICustomLoggerService _logger;
+        private readonly IDataGenerationService _dataGenerationService;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ICustomLoggerService logger, IDataGenerationService dataGenerationService)
         {
             _logger = logger;
+            _dataGenerationService = dataGenerationService;
         }
 
         [Authorize]
-        [HttpGet(Name = "GetWeatherForecast/{daysToForecast}")]
-        public IEnumerable<WeatherForecast> Get(int daysToForecast)
+        [HttpGet("{daysToForecast:int}")]
+        public async Task<ActionResult<IEnumerable<WeatherForecast>>> Get(int daysToForecast)
         {
-            return Enumerable.Range(1, daysToForecast).Select(index => new WeatherForecast
+
+            ResponseModel<IEnumerable<WeatherForecast>> response = new ResponseModel<IEnumerable<WeatherForecast>>();
+
+            if (daysToForecast <= 0)
             {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                response.Status = false;
+                response.Message = "Failed to request Get WeatherForecast";
+                response.Errors.Add("El parametro <daysToForecast> debe de ser un entero mayor a cero.");
+
+                _logger.Error(response);
+
+                return BadRequest(response);
+            }
+
+            var result =  await _dataGenerationService.GetForecast(1, daysToForecast);
+
+            response.Status = true;
+            response.Message = "Successfully requested";
+            response.Data = result;
+
+            _logger.Info($"Status: {response.Status} - {response.Message}");
+
+            return Ok(response);
         }
     }
 }
