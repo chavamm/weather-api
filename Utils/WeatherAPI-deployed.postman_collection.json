@@ -1,0 +1,98 @@
+{
+	"info": {
+		"_postman_id": "10b041d2-437f-46d1-b172-2c51827481cf",
+		"name": "WeatherAPI-deployed",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"user\",\r\n  \"password\": \"mypassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/Auth/login",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"Auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetWeatherForecast",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/WeatherForecast/5",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"WeatherForecast",
+						"5"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{Token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://localhost:5000/api",
+			"type": "default"
+		},
+		{
+			"key": "Token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIwIiwidW5pcXVlX25hbWUiOiJ1c2VyIiwibmJmIjoxNzI5MjAyODI2LCJleHAiOjE3MjkyMTAwMjYsImlhdCI6MTcyOTIwMjgyNiwiaXNzIjoiV2VhdGhlckFQSSIsImF1ZCI6IldlYXRoZXJBUElVc2VycyJ9.hVDRM0aEuXb-CmFsHh7MXjfLvy4q95aHrLtqu-6IpDw"
+		}
+	]
+}
