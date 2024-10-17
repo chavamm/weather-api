@@ -1,4 +1,5 @@
-﻿using WebApplication1.Services.Interfaces;
+﻿using System.Globalization;
+using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
@@ -8,6 +9,13 @@ namespace WebApplication1.Services
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
+
+        private readonly string _dateFormat;
+
+        public DataGenerationService(IEnvironmentService environmentService)
+        {
+            _dateFormat = environmentService.GetEnvironmentVariable("DATE_FORMAT") ?? "yyyy-MM-dd";
+        }
 
         public async Task<IEnumerable<WeatherForecast>> GetForecast(int start, int daysToForecast)
         {
@@ -24,7 +32,7 @@ namespace WebApplication1.Services
 
             var result = Enumerable.Range(start, daysToForecast).Select(index => new WeatherForecast
             {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                Date = DateTime.Now.AddDays(index).ToString(_dateFormat, CultureInfo.InvariantCulture),
                 TemperatureC = Random.Shared.Next(-20, 55),
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
